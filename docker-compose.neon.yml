@@ -1,0 +1,15 @@
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env.neon
+    environment:
+      EVERSHOP_HOME_URL: http://localhost:3002
+    ports:
+      - "3002:3000"
+    volumes:
+      - ./media:/app/media

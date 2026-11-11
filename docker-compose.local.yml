@@ -1,0 +1,37 @@
+﻿services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_PASSWORD: evershop_local_password
+      DB_USER: evershop
+      DB_NAME: evershop
+      DB_SSLMODE: disable
+      EVERSHOP_HOME_URL: http://localhost:3001
+    depends_on:
+      database:
+        condition: service_healthy
+    ports:
+      - "3001:3000"
+
+  database:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: evershop_local_password
+      POSTGRES_USER: evershop
+      POSTGRES_DB: evershop
+    volumes:
+      - evershop_local_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U evershop -d evershop"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  evershop_local_data:
